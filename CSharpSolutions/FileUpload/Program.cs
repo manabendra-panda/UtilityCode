@@ -31,10 +31,10 @@ namespace FileUpload
                 //           keyVaultEndpoint, keyVaultClient, new DefaultKeyVaultSecretManager());
                 //    }
                 //})
-                .ConfigureLogging((ctx, builder) =>
-                {
-                    builder.AddApplicationInsights(ctx.Configuration.GetValue<string>("AiInstrumentationKey"));
-                })
+                //.ConfigureLogging((ctx, builder) =>
+                //{
+                //    builder.AddApplicationInsights(ctx.Configuration.GetValue<string>("AiInstrumentationKey"));
+                //})
                 .UseStartup<Startup>();
     }
 }
