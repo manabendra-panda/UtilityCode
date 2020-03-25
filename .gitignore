@@ -1,0 +1,8 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/CSharpSolutions/FileUpload/obj
+/CSharpSolutions/FileUpload/bin
+/CSharpSolutions/.vs/FileUpload/v15/Server/sqlite3
+/CSharpSolutions/FileUpload/Properties/PublishProfiles
