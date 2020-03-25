@@ -16,10 +16,12 @@ namespace FileUpload.Controllers
     {
         private readonly IBlobStorageHelper _blobStorageHelper;
         private readonly ILogger<FileUploadController> _logger;
-        public FileUploadController(IBlobStorageHelper blobStorageHelper, ILogger<FileUploadController> logger)
+        private readonly IConfiguration _configuration;
+        public FileUploadController(IBlobStorageHelper blobStorageHelper, ILogger<FileUploadController> logger, IConfiguration configuration)
         {
             _blobStorageHelper = blobStorageHelper;
             _logger = logger;
+            _configuration = configuration;
         }
         [HttpPost("UploadFiles")]
         [DisableRequestSizeLimit]
@@ -27,16 +29,18 @@ namespace FileUpload.Controllers
         {
             var uploadSuccess = false;
             string uploadedUri = null;
+            var strorageConnection = _configuration["StorageConnectionString"];
+            var containerName = _configuration.GetValue<string>("ContainerName");
 
             foreach (var formFile in files)
             {
-                using (var ms=new MemoryStream())
+                using (var ms = new MemoryStream())
                 {
                     _logger.LogInformation($"File Posted {formFile.FileName}");
 
                     formFile.CopyTo(ms);
                     var fileBytes = ms.ToArray();
-                   (uploadSuccess,uploadedUri)= await _blobStorageHelper.UploadFileToBlobStorageAsync(fileBytes, Path.GetFileName(formFile.FileName));
+                    (uploadSuccess, uploadedUri) = await _blobStorageHelper.UploadFileToBlobStorageAsync(fileBytes, Path.GetFileName(formFile.FileName), containerName, strorageConnection);
                     TempData["UploadUri"] = uploadedUri;
 
                     _logger.LogInformation($"File UploadUri {uploadedUri}");

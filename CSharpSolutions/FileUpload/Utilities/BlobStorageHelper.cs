@@ -1,35 +1,28 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
-using System;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace FileUpload.Utilities
 {
     public class BlobStorageHelper : IBlobStorageHelper
     {
-        private readonly IConfiguration _configuration;
         private readonly ILogger<BlobStorageHelper> _logger;
-        
-        public BlobStorageHelper(IConfiguration configuration, ILogger<BlobStorageHelper> logger)
+
+        public BlobStorageHelper(ILogger<BlobStorageHelper> logger)
         {
-            _configuration = configuration;
             _logger = logger;
         }
 
-        public async Task<(bool, string)> UploadFileToBlobStorageAsync(byte[] fileBytes, string fileName)
+        public async Task<(bool, string)> UploadFileToBlobStorageAsync(byte[] fileBytes, string fileName, string containerName, string storageConnection)
         {
             try
             {
-                String strorageconn = _configuration["StorageConnectionString"];
-
-                CloudStorageAccount storageacc = CloudStorageAccount.Parse(strorageconn);
+                CloudStorageAccount storageacc = CloudStorageAccount.Parse(storageConnection);
 
                 CloudBlobClient blobClient = storageacc.CreateCloudBlobClient();
 
-                CloudBlobContainer container = blobClient.GetContainerReference(_configuration.GetValue<string>("ContainerName"));
+                CloudBlobContainer container = blobClient.GetContainerReference(containerName);
 
                 await container.CreateIfNotExistsAsync();
 

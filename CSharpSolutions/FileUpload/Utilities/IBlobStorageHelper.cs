@@ -7,6 +7,6 @@ namespace FileUpload.Utilities
 {
     public interface IBlobStorageHelper
     {
-        Task<(bool,string)> UploadFileToBlobStorageAsync(byte[] fileBytes, string fileName);
+        Task<(bool,string)> UploadFileToBlobStorageAsync(byte[] fileBytes, string fileName, string containerName, string storageConnection);
     }
 }
