@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using System;
@@ -10,9 +11,12 @@ namespace FileUpload.Utilities
     public class BlobStorageHelper : IBlobStorageHelper
     {
         private readonly IConfiguration _configuration;
-        public BlobStorageHelper(IConfiguration configuration)
+        private readonly ILogger<BlobStorageHelper> _logger;
+        
+        public BlobStorageHelper(IConfiguration configuration, ILogger<BlobStorageHelper> logger)
         {
             _configuration = configuration;
+            _logger = logger;
         }
 
         public async Task<(bool, string)> UploadFileToBlobStorageAsync(byte[] fileBytes, string fileName)
@@ -33,13 +37,15 @@ namespace FileUpload.Utilities
 
                 if (fileBytes != null)
                 {
+                    _logger.LogInformation($"File upload started: {fileName}");
                     await blockBlob.UploadFromByteArrayAsync(fileBytes, 0, fileBytes.Length);
                 }
 
                 return (true, blockBlob.SnapshotQualifiedStorageUri.PrimaryUri.ToString());
             }
-            catch (StorageException)
+            catch (StorageException ex)
             {
+                _logger.LogError($"File upload error: {ex.ToString()}");
                 return (false, null);
             }
         }

@@ -3,6 +3,7 @@ using FileUpload.Utilities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -14,9 +15,11 @@ namespace FileUpload.Controllers
     public class FileUploadController : Controller
     {
         private readonly IBlobStorageHelper _blobStorageHelper;
-        public FileUploadController(IBlobStorageHelper blobStorageHelper)
+        private readonly ILogger<FileUploadController> _logger;
+        public FileUploadController(IBlobStorageHelper blobStorageHelper, ILogger<FileUploadController> logger)
         {
             _blobStorageHelper = blobStorageHelper;
+            _logger = logger;
         }
         [HttpPost("UploadFiles")]
         [DisableRequestSizeLimit]
@@ -29,10 +32,14 @@ namespace FileUpload.Controllers
             {
                 using (var ms=new MemoryStream())
                 {
+                    _logger.LogInformation($"File Posted {formFile.FileName}");
+
                     formFile.CopyTo(ms);
                     var fileBytes = ms.ToArray();
                    (uploadSuccess,uploadedUri)= await _blobStorageHelper.UploadFileToBlobStorageAsync(fileBytes, Path.GetFileName(formFile.FileName));
                     TempData["UploadUri"] = uploadedUri;
+
+                    _logger.LogInformation($"File UploadUri {uploadedUri}");
                 }
             }
             if (uploadSuccess)
