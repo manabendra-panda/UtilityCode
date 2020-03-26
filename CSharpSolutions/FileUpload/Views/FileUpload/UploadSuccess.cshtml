@@ -1,6 +1,12 @@
-﻿<div class="form-group">
+﻿@model List<string>
+
+<div class="form-group">
     <div class="col-md-10">
-        <p>Success!</p> @TempData["UploadUri"]
+        <p>Success!</p>
+        @foreach (var element in Model)
+        {
+            <p>@Html.DisplayFor(m => element)</p>
+        }
         <p>
             <a asp-area="" asp-controller="FileUpload" asp-action="Index">Upload another file</a>
         </p>

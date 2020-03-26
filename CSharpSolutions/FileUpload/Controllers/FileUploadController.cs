@@ -28,7 +28,7 @@ namespace FileUpload.Controllers
         public async Task<IActionResult> Post(List<IFormFile> files)
         {
             var uploadSuccess = false;
-            string uploadedUri = null;
+            List<string> uploadedUriList = new List<string>();
             var strorageConnection = _configuration["StorageConnectionString"];
             var containerName = _configuration.GetValue<string>("ContainerName");
 
@@ -40,14 +40,18 @@ namespace FileUpload.Controllers
 
                     formFile.CopyTo(ms);
                     var fileBytes = ms.ToArray();
+                    string uploadedUri = null;
                     (uploadSuccess, uploadedUri) = await _blobStorageHelper.UploadFileToBlobStorageAsync(fileBytes, Path.GetFileName(formFile.FileName), containerName, strorageConnection);
-                    TempData["UploadUri"] = uploadedUri;
+                    if (uploadedUri != null)
+                    {
+                        uploadedUriList.Add(uploadedUri);
+                    }
 
                     _logger.LogInformation($"File UploadUri {uploadedUri}");
                 }
             }
             if (uploadSuccess)
-                return View("UploadSuccess");
+                return View("UploadSuccess",uploadedUriList);
             else
                 return View("UploadError");
 
