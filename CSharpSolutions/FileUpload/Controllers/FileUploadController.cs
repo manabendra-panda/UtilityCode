@@ -29,7 +29,7 @@ namespace FileUpload.Controllers
         {
             var uploadSuccess = false;
             List<string> uploadedUriList = new List<string>();
-            var strorageConnection = _configuration["StorageConnectionString"];
+            var strorageConnection = _configuration.GetValue<string>("StorageConnectionString");
             var containerName = _configuration.GetValue<string>("ContainerName");
 
             foreach (var formFile in files)
